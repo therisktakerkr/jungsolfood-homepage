@@ -133,8 +133,8 @@
       <a href="index.html#contact">문의</a>
     </nav>
     <div class="header-actions">
-      <button class="btn" id="editBtn" onclick="promptEdit()">✏️ 편집 모드</button>
-      <button class="btn primary" onclick="printPage()">🖨️ 인쇄</button>
+      <button class="btn" id="editBtn" onclick="promptEdit()" style="font-size:11px;height:34px;padding:0 10px;gap:4px">✏️ 편집</button>
+      <button class="btn primary" onclick="printPage()" style="font-size:11px;height:34px;padding:0 10px;gap:4px">🖨️ 인쇄</button>
       <button class="hamburger" id="hamburger" onclick="toggleMenu()"><span></span><span></span><span></span></button>
     </div>
   </div>
@@ -292,36 +292,39 @@ function setLoading(show) {
   document.getElementById('loading').style.display = show ? 'flex' : 'none';
 }
 
-// Google Sheets에서 데이터 불러오기 (JSONP 방식으로 CORS 우회)
+// Google Sheets에서 데이터 불러오기 (JSONP 방식)
 function loadData() {
   setLoading(true);
-  const callbackName = 'jsonpCallback_' + Date.now();
-  
-  window[callbackName] = function(json) {
+
+  const cbName = '_cb' + Date.now();
+  window[cbName] = function(json) {
     data = json;
     renderAll();
     setLoading(false);
-    delete window[callbackName];
-    document.getElementById('jsonp-script')?.remove();
+    delete window[cbName];
+    const s = document.getElementById('_jsonp');
+    if (s) s.remove();
   };
-  
+
   const script = document.createElement('script');
-  script.id = 'jsonp-script';
-  script.src = API_URL + '?callback=' + callbackName;
+  script.id = '_jsonp';
   script.onerror = function() {
     setLoading(false);
     alert('데이터를 불러오는데 실패했습니다. 잠시 후 다시 시도해주세요.');
+    this.remove();
   };
+  script.src = API_URL + '?callback=' + cbName;
   document.head.appendChild(script);
 }
 
-// Google Sheets에 데이터 저장
+// Google Sheets에 데이터 저장 (no-cors)
 async function saveToSheet() {
   setLoading(true);
   try {
     await fetch(API_URL, {
       method: 'POST',
       mode: 'no-cors',
+      headers: {'Content-Type': 'text/plain'},
       body: JSON.stringify(data),
     });
   } catch(e) {
