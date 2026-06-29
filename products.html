@@ -15,6 +15,10 @@
     *{box-sizing:border-box;margin:0;padding:0}
     body{font-family:"Pretendard",-apple-system,sans-serif;background:var(--cream);color:var(--ink);font-size:15px;line-height:1.6}
     a{text-decoration:none;color:inherit}
+    .loading{position:fixed;inset:0;background:rgba(251,250,246,.85);z-index:200;display:none;align-items:center;justify-content:center;flex-direction:column;gap:16px}
+    .loading-spinner{width:40px;height:40px;border:3px solid var(--line);border-top-color:var(--green);border-radius:50%;animation:spin .8s linear infinite}
+    .loading-text{font-size:14px;color:var(--muted);font-weight:600}
+    @keyframes spin{to{transform:rotate(360deg)}}
 
     /* Header */
     .header{position:sticky;top:0;z-index:50;background:rgba(251,250,246,.92);backdrop-filter:blur(16px);border-bottom:1px solid var(--line);padding:0 24px}
@@ -101,6 +105,10 @@
   </style>
 </head>
 <body>
+<div class="loading" id="loading">
+  <div class="loading-spinner"></div>
+  <div class="loading-text">품목표 불러오는 중...</div>
+</div>
 
 <header class="header">
   <div class="header-inner">
@@ -240,48 +248,47 @@
 
 <script>
 // 품목 데이터
-const data = {
-  pork: [
-    {item:'삼겹살', brand:'핸들바우어', origin:'오스트리아', pack:'VP', storage:'고려', own:'마장동', note:''},
-    {item:'삼겹살', brand:'마프리제스 (듀록)', origin:'스페인', pack:'VP', storage:'대청', own:'마장동', note:''},
-    {item:'삼겹살', brand:'엘포조 (듀록)', origin:'스페인', pack:'VP', storage:'고려', own:'마장동', note:'입항예정'},
-    {item:'삼겹살', brand:'맥스아그로', origin:'칠레', pack:'VP', storage:'기흥/CS', own:'마장동', note:''},
-    {item:'삼겹살', brand:'두메코', origin:'네덜란드', pack:'VP', storage:'삼일', own:'마장동', note:''},
-    {item:'미박삼겹살', brand:'핸들바우어', origin:'오스트리아', pack:'VP', storage:'고려', own:'마장동', note:''},
-    {item:'미추리삼겹', brand:'치코', origin:'스페인', pack:'VP', storage:'고려', own:'마장동', note:''},
-    {item:'목살', brand:'치코 (듀록)', origin:'스페인', pack:'VP', storage:'아주용인', own:'마장동', note:''},
-    {item:'목살', brand:'마프리제스 (듀록)', origin:'스페인', pack:'VP', storage:'대청', own:'마장동', note:''},
-    {item:'미니족', brand:'누드블리스', origin:'벨기에', pack:'BULK', storage:'고려', own:'마장동', note:''},
-    {item:'미니족', brand:'테니시/테니쉬', origin:'독일', pack:'BULK', storage:'고려', own:'마장동', note:''},
-    {item:'미니족', brand:'베슬러', origin:'독일', pack:'BULK', storage:'대청', own:'마장동', note:''},
-    {item:'장족', brand:'키니톤', origin:'멕시코', pack:'BULK', storage:'아주용인', own:'마장동', note:''},
-    {item:'장족', brand:'치코 1.6-1.8', origin:'스페인', pack:'BULK', storage:'고려', own:'', note:''},
-    {item:'장족', brand:'치코 1.8~2.0', origin:'스페인', pack:'BULK', storage:'고려', own:'마장동', note:''},
-    {item:'장족', brand:'치코 2.0~2.5', origin:'스페인', pack:'BULK', storage:'고려', own:'', note:''},
-    {item:'장족', brand:'엘포조', origin:'스페인', pack:'BULK', storage:'고려', own:'', note:'입항예정'},
-    {item:'장족', brand:'프리빈 2.0-2.2', origin:'스페인', pack:'BULK', storage:'고려', own:'', note:'6월 입항예정'},
-    {item:'국내산 전족', brand:'부경 전족', origin:'국내산', pack:'BULK', storage:'고려', own:'마장동', note:''},
-    {item:'국내산 전족', brand:'도드람 전족', origin:'국내산', pack:'BULK', storage:'고려', own:'마장동', note:''},
-    {item:'국내산 후족', brand:'브랜드 후족', origin:'국내산', pack:'BULK', storage:'고려', own:'', note:''},
-    {item:'미박사태', brand:'프리빈', origin:'스페인', pack:'BULK', storage:'고려', own:'마장동', note:''},
-    {item:'돈학', brand:'프리빈', origin:'스페인', pack:'BULK', storage:'고려', own:'마장동', note:'6월 입항예정'},
-    {item:'항정', brand:'프리빈', origin:'스페인', pack:'VP', storage:'고려', own:'마장동', note:'6월 입항예정'},
-    {item:'항정', brand:'놀슨', origin:'멕시코', pack:'VP', storage:'아주용인', own:'마장동', note:''},
-    {item:'가브리', brand:'놀슨', origin:'멕시코', pack:'VP', storage:'아주용인', own:'마장동', note:''},
-    {item:'가브리', brand:'프리빈', origin:'스페인', pack:'VP', storage:'강동1', own:'마장동', note:''},
-    {item:'가브리', brand:'홀스톤', origin:'미국', pack:'VP', storage:'남사', own:'마장동', note:''},
-    {item:'갈매기', brand:'키니톤', origin:'멕시코', pack:'VP', storage:'아주용인', own:'마장동', note:''},
-  ],
-  majang: [
-    {item:'차돌양지', brand:'TBS', origin:'호주', pack:'A', storage:'', own:'마장동', note:''},
-    {item:'부채', brand:'쇼케이스', origin:'미국', pack:'PR', storage:'', own:'마장동', note:''},
-    {item:'갈매기', brand:'케캔', origin:'멕시코', pack:'VP', storage:'', own:'마장동', note:''},
-  ]
-};
+const API_URL = 'https://script.google.com/macros/s/AKfycbxKYkP-diOSh9AkSlhCouF-tcHku_IZmB5uOZOZ221ub4s_ttq0bXzRk3RqTVuB0mW8Vw/exec';
 
+let data = { pork: [], majang: [] };
 let editMode = false;
-let editTarget = null; // {section, index}
-let addTarget = null;  // section
+let editTarget = null;
+let addTarget = null;
+
+// 로딩 상태 표시
+function setLoading(show) {
+  document.getElementById('loading').style.display = show ? 'flex' : 'none';
+}
+
+// Google Sheets에서 데이터 불러오기
+async function loadData() {
+  setLoading(true);
+  try {
+    const res = await fetch(API_URL);
+    const json = await res.json();
+    data = json;
+    renderAll();
+  } catch(e) {
+    alert('데이터를 불러오는데 실패했습니다. 잠시 후 다시 시도해주세요.');
+  } finally {
+    setLoading(false);
+  }
+}
+
+// Google Sheets에 데이터 저장
+async function saveToSheet() {
+  setLoading(true);
+  try {
+    await fetch(API_URL, {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
+  } catch(e) {
+    alert('저장에 실패했습니다. 다시 시도해주세요.');
+  } finally {
+    setLoading(false);
+  }
+}
 
 function packTag(pack) {
   const map = {VP:'tag-vp', BULK:'tag-bulk', A:'tag-a', PR:'tag-pr'};
@@ -386,6 +393,7 @@ function saveRow() {
     renderTable(addTarget);
   }
   closeModal();
+  saveToSheet();
 }
 
 function deleteRow() {
@@ -394,6 +402,7 @@ function deleteRow() {
   data[editTarget.section].splice(editTarget.idx, 1);
   renderTable(editTarget.section);
   closeModal();
+  saveToSheet();
 }
 
 function closeModal(e) {
@@ -412,7 +421,8 @@ const d = new Date();
 document.getElementById('updateDate').textContent =
   `${d.getFullYear()}년 ${d.getMonth()+1}월 ${d.getDate()}일 기준`;
 
-renderAll();
+// 시작 시 Google Sheets에서 데이터 로드
+loadData();
 </script>
 
 <style>
