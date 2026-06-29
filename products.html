@@ -502,6 +502,20 @@ document.getElementById('updateDate').textContent =
 
 // 시작 시 Google Sheets에서 데이터 로드
 loadData();
+
+// 영문에서 접근했을 때 WhatsApp 플로팅 버튼 표시
+const fromEn = document.referrer.includes('en.html') || 
+               navigator.language.startsWith('en') ||
+               location.search.includes('lang=en');
+if(fromEn){
+  const wa = document.createElement('a');
+  wa.href='https://wa.me/821082533530';
+  wa.target='_blank';
+  wa.rel='noopener';
+  wa.textContent='WhatsApp';
+  wa.style.cssText='position:fixed;right:22px;bottom:22px;z-index:60;border-radius:999px;height:54px;padding:0 24px;background:#184b36;color:#fff;font-weight:700;font-size:15px;display:inline-flex;align-items:center;justify-content:center;text-decoration:none;box-shadow:0 18px 50px rgba(24,75,54,.28);font-family:inherit';
+  document.body.appendChild(wa);
+}
 </script>
 
 <style>
