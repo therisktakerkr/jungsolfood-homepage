@@ -96,6 +96,10 @@
     .contact-item{font-size:13px;color:var(--muted)}
     .contact-item b{color:var(--green);margin-right:4px}
 
+    @media(max-width:900px){
+      .header-inner nav{display:none}
+      .header-inner .brand img{height:36px}
+    }
     @media(max-width:700px){
       .page-head{flex-direction:column;align-items:flex-start}
       .form-grid{grid-template-columns:1fr}
@@ -112,18 +116,41 @@
 
 <header class="header">
   <div class="header-inner">
-    <div style="display:flex;align-items:center;gap:20px">
-      <a href="index.html" class="btn-back">← 홈으로</a>
-      <div class="brand">
-        (주) 정솔푸드 <span class="brand-sub">취급 품목표</span>
-      </div>
+    <div style="display:flex;align-items:center;gap:28px">
+      <a class="brand" href="index.html">
+        <img src="assets/jungsol_bi_logo.png" alt="(주) 정솔푸드" style="height:44px;display:block;">
+      </a>
+      <nav style="display:flex;align-items:center;gap:28px;font-size:15px;font-weight:500;color:#24322f">
+        <a href="index.html#about" style="transition:.2s" onmouseover="this.style.color='#184b36'" onmouseout="this.style.color='#24322f'">회사 소개</a>
+        <a href="index.html#growth" style="transition:.2s" onmouseover="this.style.color='#184b36'" onmouseout="this.style.color='#24322f'">성장 현황</a>
+        <a href="index.html#business" style="transition:.2s" onmouseover="this.style.color='#184b36'" onmouseout="this.style.color='#24322f'">사업 영역</a>
+        <a href="products.html" style="color:#184b36;font-weight:700">품목표</a>
+        <a href="index.html#values" style="transition:.2s" onmouseover="this.style.color='#184b36'" onmouseout="this.style.color='#24322f'">비전</a>
+        <a href="index.html#contact" style="transition:.2s" onmouseover="this.style.color='#184b36'" onmouseout="this.style.color='#24322f'">문의</a>
+      </nav>
     </div>
     <div class="header-actions">
-      <button class="btn" id="editBtn" onclick="toggleEdit()">✏️ 편집 모드</button>
+      <button class="btn" id="editBtn" onclick="promptEdit()">✏️ 편집 모드</button>
       <button class="btn primary" onclick="printPage()">🖨️ 인쇄</button>
     </div>
   </div>
 </header>
+
+<!-- 비밀번호 모달 -->
+<div class="edit-overlay" id="pwOverlay" onclick="closePwModal(event)" style="display:none">
+  <div class="edit-modal" onclick="event.stopPropagation()" style="max-width:360px">
+    <h3>편집 모드 잠금 해제</h3>
+    <p style="font-size:14px;color:#66746f;margin-bottom:20px">비밀번호를 입력해주세요</p>
+    <div class="form-group" style="margin-bottom:16px">
+      <input type="password" id="pw-input" placeholder="비밀번호" style="width:100%;height:44px;padding:0 14px;border:1px solid #dbe7df;border-radius:8px;font-size:16px;font-family:inherit;outline:none" onkeydown="if(event.key==='Enter')checkPw()">
+    </div>
+    <div id="pw-error" style="color:#dc2626;font-size:13px;margin-bottom:12px;display:none">비밀번호가 올바르지 않습니다</div>
+    <div style="display:flex;gap:10px;justify-content:flex-end">
+      <button class="btn-cancel" onclick="closePwModal()">취소</button>
+      <button class="btn-save" onclick="checkPw()">확인</button>
+    </div>
+  </div>
+</div>
 
 <main class="page">
   <div class="page-head">
@@ -342,6 +369,34 @@ function renderTable(section) {
 function renderAll() {
   renderTable('pork');
   renderTable('majang');
+}
+
+function promptEdit() {
+  if (editMode) {
+    toggleEdit();
+    return;
+  }
+  document.getElementById('pw-input').value = '';
+  document.getElementById('pw-error').style.display = 'none';
+  document.getElementById('pwOverlay').style.display = 'flex';
+  setTimeout(() => document.getElementById('pw-input').focus(), 100);
+}
+
+function checkPw() {
+  const pw = document.getElementById('pw-input').value;
+  if (pw === '4002') {
+    document.getElementById('pwOverlay').style.display = 'none';
+    toggleEdit();
+  } else {
+    document.getElementById('pw-error').style.display = 'block';
+    document.getElementById('pw-input').value = '';
+    document.getElementById('pw-input').focus();
+  }
+}
+
+function closePwModal(e) {
+  if (e && e.target !== document.getElementById('pwOverlay')) return;
+  document.getElementById('pwOverlay').style.display = 'none';
 }
 
 function toggleEdit() {
