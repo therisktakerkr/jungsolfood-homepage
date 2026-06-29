@@ -261,31 +261,36 @@ function setLoading(show) {
 }
 
 // Google Sheets에서 데이터 불러오기 (JSONP 방식으로 CORS 우회)
-async function loadData() {
+function loadData() {
   setLoading(true);
-  try {
-    const res = await fetch(API_URL + '?callback=1', {redirect: 'follow'});
-    const json = await res.json();
+  const callbackName = 'jsonpCallback_' + Date.now();
+  
+  window[callbackName] = function(json) {
     data = json;
     renderAll();
-  } catch(e) {
-    console.error(e);
-    alert('데이터를 불러오는데 실패했습니다. 잠시 후 다시 시도해주세요.');
-  } finally {
     setLoading(false);
-  }
+    delete window[callbackName];
+    document.getElementById('jsonp-script')?.remove();
+  };
+  
+  const script = document.createElement('script');
+  script.id = 'jsonp-script';
+  script.src = API_URL + '?callback=' + callbackName;
+  script.onerror = function() {
+    setLoading(false);
+    alert('데이터를 불러오는데 실패했습니다. 잠시 후 다시 시도해주세요.');
+  };
+  document.head.appendChild(script);
 }
 
 // Google Sheets에 데이터 저장
 async function saveToSheet() {
   setLoading(true);
   try {
-    const formData = new FormData();
-    formData.append('data', JSON.stringify(data));
     await fetch(API_URL, {
       method: 'POST',
+      mode: 'no-cors',
       body: JSON.stringify(data),
-      redirect: 'follow',
     });
   } catch(e) {
     console.error(e);
