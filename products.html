@@ -59,7 +59,7 @@
     tbody tr{border-bottom:1px solid var(--line);transition:background .15s}
     tbody tr:last-child{border-bottom:none}
     tbody tr:hover{background:#f4f9f6}
-    tbody td{padding:12px 16px;color:var(--ink);vertical-align:middle}
+    tbody td{padding:12px 16px;color:var(--ink);vertical-align:middle;white-space:nowrap}
     .sub-cat{color:var(--green2);font-weight:600;font-size:13px}
     .tag{display:inline-flex;align-items:center;height:22px;padding:0 8px;border-radius:4px;font-size:11px;font-weight:700;letter-spacing:.04em}
     .tag-vp{background:#e8f4ec;color:#1a6b3a}
@@ -96,7 +96,7 @@
     .add-row-btn:hover{background:var(--green-light);color:var(--green)}
 
     /* Footer */
-    .page-footer{margin-top:40px;padding-top:24px;border-top:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px}
+    .page-footer{margin-top:48px;padding:28px 0;border-top:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:16px}
     .contact-info{display:flex;gap:24px;flex-wrap:wrap}
     .contact-item{font-size:13px;color:var(--muted)}
     .contact-item b{color:var(--green);margin-right:4px}
@@ -226,8 +226,10 @@
   </div>
 
   <div class="page-footer">
-    <div style="font-size:13px;color:var(--muted)">© (주) 정솔푸드</div>
-    <div style="font-size:12px;color:var(--muted)">jungsolfood.com</div>
+    <a href="index.html"><img src="assets/jungsol_bi_logo.png" alt="(주) 정솔푸드" style="height:36px;display:block;opacity:.7"></a>
+    <a href="https://pf.kakao.com/_PwxmxfX/chat" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:8px;height:44px;padding:0 22px;background:var(--green);color:#fff;border-radius:10px;font-size:14px;font-weight:700;text-decoration:none">
+      💬 카카오톡 문의하기
+    </a>
   </div>
 </main>
 
