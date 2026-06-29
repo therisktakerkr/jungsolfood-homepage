@@ -50,7 +50,13 @@
     .reveal{opacity:0;transform:translateY(28px);transition:opacity .8s ease, transform .8s ease}.reveal.show{opacity:1;transform:none}.delay1{transition-delay:.1s}.delay2{transition-delay:.2s}.delay3{transition-delay:.3s}
 
     /* V2.7 premium refinements */
-    .intro-screen{position:fixed;inset:0;z-index:999;background:#fff;display:flex;align-items:center;justify-content:center;transition:opacity .7s ease,visibility .7s ease}.intro-screen.hide{opacity:0;visibility:hidden;pointer-events:none}.intro-inner{text-align:center;animation:introLogo 1.05s cubic-bezier(.2,.8,.2,1) both}.intro-inner img.intro-logo{width:min(260px,58vw);display:block;margin:0 auto 22px}.intro-inner img.intro-slogan{width:min(300px,62vw);display:block;margin:0 auto}.intro-inner p{font-size:18px;color:var(--green);font-weight:600;letter-spacing:.04em}@keyframes introLogo{0%{opacity:0;transform:scale(.96);filter:blur(5px)}45%{opacity:1;filter:blur(0)}100%{opacity:1;transform:scale(1)}}
+    .intro-screen{position:fixed;inset:0;z-index:999;background:#fff;display:flex;align-items:center;justify-content:center;transition:opacity .7s ease,visibility .7s ease}.intro-screen.hide{opacity:0;visibility:hidden;pointer-events:none}
+    .intro-inner{text-align:center;animation:introLogo 1.05s cubic-bezier(.2,.8,.2,1) both}.intro-inner img.intro-logo{width:min(260px,58vw);display:block;margin:0 auto 22px}.intro-inner img.intro-slogan{width:min(300px,62vw);display:block;margin:0 auto}.intro-inner p{font-size:18px;color:var(--green);font-weight:600;letter-spacing:.04em}@keyframes introLogo{0%{opacity:0;transform:scale(.96);filter:blur(5px)}45%{opacity:1;filter:blur(0)}100%{opacity:1;transform:scale(1)}}
+    .intro-stats{margin-top:32px;display:flex;flex-direction:column;align-items:center;gap:6px}
+    .intro-counter{font-size:clamp(32px,8vw,52px);font-weight:800;color:var(--green);letter-spacing:-.06em;line-height:1}
+    .intro-counter-label{font-size:13px;color:var(--muted);font-weight:500;letter-spacing:.04em}
+    .intro-bar-wrap{width:min(220px,52vw);height:3px;background:#e8f0eb;border-radius:999px;margin-top:28px;overflow:hidden}
+    .intro-bar{height:100%;width:0;background:linear-gradient(90deg,#184b36,#4c995e);border-radius:999px;transition:width .05s linear}
     .hero-title .line{color:#fff !important}.hero-title .accent{color:#6ec99a !important}.hero-title .line:not(.accent){text-shadow:0 4px 24px rgba(0,0,0,.35)}.hero-grid{position:relative;z-index:2}.hero-copy{padding-left:44px;border-left:2px solid rgba(255,255,255,.22)}.hero-copy h2{font-size:28px;color:#a8dbb8;margin-bottom:26px;letter-spacing:-.05em}.hero-copy p{max-width:470px;margin-bottom:34px;color:rgba(255,255,255,.78)}
     .hero .eyebrow{color:rgba(255,255,255,.65);font-size:12px;font-weight:700;letter-spacing:.3em;margin-bottom:20px;display:block;transform:none;padding:0}
     .hero .wrap{padding-top:20px;padding-left:0}
@@ -115,7 +121,18 @@
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"Organization","name":"(주) 정솔푸드","url":".","email":"jungsolfood@naver.com","telephone":"02-6237-3530","address":[{"@type":"PostalAddress","streetAddress":"서울특별시 성동구 마장로25길 13-1","addressCountry":"KR"},{"@type":"PostalAddress","streetAddress":"서울특별시 성동구 마장로 191","addressCountry":"KR"}],"sameAs":["https://pf.kakao.com/_PwxmxfX"]}</script>
 </head>
 <body>
-  <div class="intro-screen" id="intro"><div class="intro-inner"><img class="intro-logo" src="assets/jungsol_bi_logo.png" alt="(주) 정솔푸드 BI 로고"></div></div>
+  <div class="intro-screen" id="intro">
+    <div class="intro-inner">
+      <img class="intro-logo" src="assets/jungsol_bi_logo.png" alt="(주) 정솔푸드 BI 로고">
+      <div class="intro-stats">
+        <div class="intro-counter" id="introCounter">0</div>
+        <div class="intro-counter-label">억 원 · 2025년 매출</div>
+      </div>
+      <div class="intro-bar-wrap">
+        <div class="intro-bar" id="introBar"></div>
+      </div>
+    </div>
+  </div>
   <a class="skip" href="#main">본문 바로가기</a>
   <header class="header">
     <div class="wrap">
@@ -153,7 +170,32 @@
   </main>
   <footer><div class="wrap"><div class="foot-logo"><img src="assets/jungsol_bi_logo.png" alt="(주) 정솔푸드 BI 로고" width="140" height="54"></div><div class="foot-info">본점 : 서울특별시 성동구 마장로25길 13-1 · 지점 : 서울특별시 성동구 마장로 191 · 사업자번호 : 197-87-02813 · 이메일 : jungsolfood@naver.com</div></div></footer>
   <script>
-    window.addEventListener("load",()=>{setTimeout(()=>{document.getElementById("intro")?.classList.add("hide");document.body.classList.add("intro-done");},950)});
+    window.addEventListener("load",()=>{
+      // 숫자 카운터 + 진행 바 애니메이션
+      const target = 119; // 2025년 매출 119억
+      const duration = 900; // ms
+      const counter = document.getElementById('introCounter');
+      const bar = document.getElementById('introBar');
+      const start = performance.now();
+      function animate(now){
+        const elapsed = now - start;
+        const progress = Math.min(elapsed / duration, 1);
+        const eased = 1 - Math.pow(1 - progress, 3); // ease-out cubic
+        counter.textContent = Math.round(eased * target);
+        bar.style.width = (eased * 100) + '%';
+        if(progress < 1){
+          requestAnimationFrame(animate);
+        } else {
+          counter.textContent = target;
+          bar.style.width = '100%';
+          setTimeout(()=>{
+            document.getElementById("intro")?.classList.add("hide");
+            document.body.classList.add("intro-done");
+          }, 300);
+        }
+      }
+      requestAnimationFrame(animate);
+    });
     function toggleMenu(){const h=document.getElementById('hamburger');const n=document.getElementById('mobileNav');h.classList.toggle('open');n.classList.toggle('open');document.body.style.overflow=n.classList.contains('open')?'hidden':'';}
     function closeMenu(){document.getElementById('hamburger').classList.remove('open');document.getElementById('mobileNav').classList.remove('open');document.body.style.overflow='';};
     // Hero: 헤더 아래 남은 공간 전체를 채우되 16:9 비율 최소 보장
