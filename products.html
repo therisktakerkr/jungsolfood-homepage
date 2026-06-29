@@ -22,7 +22,7 @@
 
     /* Header */
     .header{position:sticky;top:0;z-index:50;background:rgba(251,250,246,.92);backdrop-filter:blur(16px);border-bottom:1px solid var(--line);padding:0 24px}
-    .header-inner{max-width:1200px;margin:0 auto;height:72px;display:flex;align-items:center;justify-content:space-between;gap:16px}
+    .header-inner{max-width:1200px;margin:0 auto;height:72px;display:flex;align-items:center;justify-content:space-between;gap:16px;position:relative}
     .brand{display:flex;align-items:center;gap:10px;font-size:18px;font-weight:700;color:var(--green)}
     .brand-sub{font-size:13px;font-weight:500;color:var(--muted);border-left:1px solid var(--line);padding-left:10px;margin-left:2px}
     .header-actions{display:flex;gap:10px;align-items:center}
@@ -120,15 +120,15 @@
       <a class="brand" href="index.html">
         <img src="assets/jungsol_bi_logo.png" alt="(주) 정솔푸드" style="height:44px;display:block;">
       </a>
-      <nav style="display:flex;align-items:center;gap:28px;font-size:15px;font-weight:500;color:#24322f">
-        <a href="index.html#about" style="transition:.2s" onmouseover="this.style.color='#184b36'" onmouseout="this.style.color='#24322f'">회사 소개</a>
-        <a href="index.html#growth" style="transition:.2s" onmouseover="this.style.color='#184b36'" onmouseout="this.style.color='#24322f'">성장 현황</a>
-        <a href="index.html#business" style="transition:.2s" onmouseover="this.style.color='#184b36'" onmouseout="this.style.color='#24322f'">사업 영역</a>
-        <a href="products.html" style="color:#184b36;font-weight:700">품목표</a>
-        <a href="index.html#values" style="transition:.2s" onmouseover="this.style.color='#184b36'" onmouseout="this.style.color='#24322f'">비전</a>
-        <a href="index.html#contact" style="transition:.2s" onmouseover="this.style.color='#184b36'" onmouseout="this.style.color='#24322f'">문의</a>
-      </nav>
     </div>
+    <nav style="display:flex;align-items:center;gap:28px;font-size:15px;font-weight:500;color:#24322f;position:absolute;left:50%;transform:translateX(-50%)">
+      <a href="index.html#about" style="transition:.2s" onmouseover="this.style.color='#184b36'" onmouseout="this.style.color='#24322f'">회사 소개</a>
+      <a href="index.html#growth" style="transition:.2s" onmouseover="this.style.color='#184b36'" onmouseout="this.style.color='#24322f'">성장 현황</a>
+      <a href="index.html#business" style="transition:.2s" onmouseover="this.style.color='#184b36'" onmouseout="this.style.color='#24322f'">사업 영역</a>
+      <a href="products.html" style="color:#184b36;font-weight:700">품목표</a>
+      <a href="index.html#values" style="transition:.2s" onmouseover="this.style.color='#184b36'" onmouseout="this.style.color='#24322f'">비전</a>
+      <a href="index.html#contact" style="transition:.2s" onmouseover="this.style.color='#184b36'" onmouseout="this.style.color='#24322f'">문의</a>
+    </nav>
     <div class="header-actions">
       <button class="btn" id="editBtn" onclick="promptEdit()">✏️ 편집 모드</button>
       <button class="btn primary" onclick="printPage()">🖨️ 인쇄</button>
