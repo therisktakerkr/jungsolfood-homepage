@@ -1,0 +1,427 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>정솔푸드 | 취급 품목표</title>
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+  <style>
+    @import url("https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css");
+    :root{
+      --green:#184b36;--green2:#2f6048;--green-light:#eaf3ee;
+      --ink:#111817;--muted:#66746f;--line:#dbe7df;--cream:#fbfaf6;--white:#fff;
+      --shadow:0 8px 32px rgba(24,75,54,.08);
+    }
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:"Pretendard",-apple-system,sans-serif;background:var(--cream);color:var(--ink);font-size:15px;line-height:1.6}
+    a{text-decoration:none;color:inherit}
+
+    /* Header */
+    .header{position:sticky;top:0;z-index:50;background:rgba(251,250,246,.92);backdrop-filter:blur(16px);border-bottom:1px solid var(--line);padding:0 24px}
+    .header-inner{max-width:1200px;margin:0 auto;height:72px;display:flex;align-items:center;justify-content:space-between;gap:16px}
+    .brand{display:flex;align-items:center;gap:10px;font-size:18px;font-weight:700;color:var(--green)}
+    .brand-sub{font-size:13px;font-weight:500;color:var(--muted);border-left:1px solid var(--line);padding-left:10px;margin-left:2px}
+    .header-actions{display:flex;gap:10px;align-items:center}
+    .btn{display:inline-flex;align-items:center;gap:7px;height:40px;padding:0 18px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;border:1px solid var(--green);transition:.2s;background:transparent;color:var(--green);font-family:inherit}
+    .btn:hover{background:var(--green-light)}
+    .btn.primary{background:var(--green);color:#fff;border-color:var(--green)}
+    .btn.primary:hover{background:var(--green2)}
+    .btn-back{font-size:13px;color:var(--muted);display:flex;align-items:center;gap:6px}
+    .btn-back:hover{color:var(--green)}
+
+    /* Page */
+    .page{max-width:1200px;margin:0 auto;padding:40px 24px 80px}
+    .page-head{margin-bottom:32px;display:flex;align-items:flex-end;justify-content:space-between;gap:16px;flex-wrap:wrap}
+    .page-title{font-size:28px;font-weight:700;color:var(--green);letter-spacing:-.05em}
+    .page-date{font-size:13px;color:var(--muted)}
+    .eyebrow{font-size:11px;font-weight:700;letter-spacing:.4em;color:var(--green);margin-bottom:10px}
+
+    /* Category blocks */
+    .category-block{margin-bottom:48px}
+    .category-title{display:flex;align-items:center;gap:12px;margin-bottom:16px;padding-bottom:12px;border-bottom:2px solid var(--green)}
+    .category-name{font-size:18px;font-weight:700;color:var(--green)}
+    .category-count{font-size:12px;font-weight:600;color:var(--white);background:var(--green);border-radius:999px;padding:2px 10px}
+
+    /* Table */
+    .tbl-wrap{overflow-x:auto;border-radius:14px;box-shadow:var(--shadow);border:1px solid var(--line)}
+    table{width:100%;border-collapse:collapse;background:var(--white);font-size:14px}
+    thead tr{background:var(--green)}
+    thead th{padding:13px 16px;text-align:left;font-size:12px;font-weight:700;letter-spacing:.06em;color:rgba(255,255,255,.9);white-space:nowrap}
+    tbody tr{border-bottom:1px solid var(--line);transition:background .15s}
+    tbody tr:last-child{border-bottom:none}
+    tbody tr:hover{background:#f4f9f6}
+    tbody td{padding:12px 16px;color:var(--ink);vertical-align:middle}
+    .sub-cat{color:var(--green2);font-weight:600;font-size:13px}
+    .tag{display:inline-flex;align-items:center;height:22px;padding:0 8px;border-radius:4px;font-size:11px;font-weight:700;letter-spacing:.04em}
+    .tag-vp{background:#e8f4ec;color:#1a6b3a}
+    .tag-bulk{background:#fff3e0;color:#b45309}
+    .tag-a{background:#e8f0fe;color:#1a56db}
+    .tag-pr{background:#fce7f3;color:#9d174d}
+    .badge-incoming{font-size:11px;color:#b45309;background:#fff3e0;border-radius:4px;padding:2px 7px;font-weight:600}
+    .badge-incoming-june{font-size:11px;color:#1a56db;background:#e8f0fe;border-radius:4px;padding:2px 7px;font-weight:600}
+    .text-muted{color:var(--muted);font-size:13px}
+
+    /* Edit mode */
+    .edit-indicator{display:none;align-items:center;gap:8px;background:#fff8e6;border:1px solid #f59e0b;border-radius:8px;padding:10px 16px;margin-bottom:20px;font-size:13px;color:#92400e;font-weight:600}
+    .edit-indicator.show{display:flex}
+    body.edit-mode .edit-cell{cursor:pointer;position:relative}
+    body.edit-mode .edit-cell:hover{background:rgba(24,75,54,.06);border-radius:4px}
+    body.edit-mode tbody tr:hover{background:#f0faf4}
+    .edit-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:100;align-items:center;justify-content:center}
+    .edit-overlay.show{display:flex}
+    .edit-modal{background:#fff;border-radius:16px;padding:32px;width:min(520px,92vw);box-shadow:0 24px 80px rgba(0,0,0,.18)}
+    .edit-modal h3{font-size:18px;font-weight:700;color:var(--green);margin-bottom:20px}
+    .form-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:20px}
+    .form-group{display:flex;flex-direction:column;gap:5px}
+    .form-group.full{grid-column:1/-1}
+    .form-group label{font-size:12px;font-weight:700;color:var(--muted);letter-spacing:.05em}
+    .form-group input,.form-group select{height:40px;padding:0 12px;border:1px solid var(--line);border-radius:8px;font-size:14px;font-family:inherit;color:var(--ink);outline:none;transition:.2s}
+    .form-group input:focus,.form-group select:focus{border-color:var(--green);box-shadow:0 0 0 3px rgba(24,75,54,.1)}
+    .modal-actions{display:flex;gap:10px;justify-content:flex-end}
+    .btn-delete{margin-right:auto;background:none;border:1px solid #fca5a5;color:#dc2626;border-radius:8px;height:40px;padding:0 16px;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;transition:.2s}
+    .btn-delete:hover{background:#fef2f2}
+    .btn-cancel{background:none;border:1px solid var(--line);color:var(--muted);border-radius:8px;height:40px;padding:0 16px;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit}
+    .btn-save{background:var(--green);color:#fff;border:none;border-radius:8px;height:40px;padding:0 20px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;transition:.2s}
+    .btn-save:hover{background:var(--green2)}
+    .add-row-btn{display:flex;align-items:center;gap:8px;width:100%;padding:12px 16px;background:none;border:1px dashed var(--line);border-top:none;color:var(--muted);font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;transition:.2s;border-radius:0 0 14px 14px}
+    .add-row-btn:hover{background:var(--green-light);color:var(--green)}
+
+    /* Footer */
+    .page-footer{margin-top:40px;padding-top:24px;border-top:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px}
+    .contact-info{display:flex;gap:24px;flex-wrap:wrap}
+    .contact-item{font-size:13px;color:var(--muted)}
+    .contact-item b{color:var(--green);margin-right:4px}
+
+    @media(max-width:700px){
+      .page-head{flex-direction:column;align-items:flex-start}
+      .form-grid{grid-template-columns:1fr}
+      .form-group.full{grid-column:1}
+      .contact-info{flex-direction:column;gap:8px}
+    }
+  </style>
+</head>
+<body>
+
+<header class="header">
+  <div class="header-inner">
+    <div style="display:flex;align-items:center;gap:20px">
+      <a href="index.html" class="btn-back">← 홈으로</a>
+      <div class="brand">
+        (주) 정솔푸드 <span class="brand-sub">취급 품목표</span>
+      </div>
+    </div>
+    <div class="header-actions">
+      <button class="btn" id="editBtn" onclick="toggleEdit()">✏️ 편집 모드</button>
+      <button class="btn primary" onclick="printPage()">🖨️ 인쇄</button>
+    </div>
+  </div>
+</header>
+
+<main class="page">
+  <div class="page-head">
+    <div>
+      <div class="eyebrow">PRODUCT LIST</div>
+      <div class="page-title">취급 품목표</div>
+    </div>
+    <div class="page-date" id="updateDate"></div>
+  </div>
+
+  <div class="edit-indicator" id="editIndicator">
+    ✏️ 편집 모드 활성화 — 수정할 항목을 클릭하세요
+  </div>
+
+  <!-- 돈육 섹션 -->
+  <div class="category-block">
+    <div class="category-title">
+      <span class="category-name">돈육</span>
+      <span class="category-count" id="pork-count"></span>
+    </div>
+    <div class="tbl-wrap">
+      <table id="pork-table">
+        <thead>
+          <tr>
+            <th>품목</th>
+            <th>브랜드</th>
+            <th>원산지</th>
+            <th>포장</th>
+            <th>보관 창고</th>
+            <th>자사 창고</th>
+            <th>비고</th>
+          </tr>
+        </thead>
+        <tbody id="pork-body"></tbody>
+      </table>
+      <button class="add-row-btn" id="pork-add" onclick="openAdd('pork')" style="display:none">+ 품목 추가</button>
+    </div>
+  </div>
+
+  <!-- 마장동 보유 품목 섹션 -->
+  <div class="category-block">
+    <div class="category-title">
+      <span class="category-name">마장동 보유 품목</span>
+      <span class="category-count" id="majang-count"></span>
+    </div>
+    <div class="tbl-wrap">
+      <table id="majang-table">
+        <thead>
+          <tr>
+            <th>품목</th>
+            <th>브랜드</th>
+            <th>원산지</th>
+            <th>포장</th>
+            <th>보관 창고</th>
+            <th>자사 창고</th>
+            <th>비고</th>
+          </tr>
+        </thead>
+        <tbody id="majang-body"></tbody>
+      </table>
+      <button class="add-row-btn" id="majang-add" onclick="openAdd('majang')" style="display:none">+ 품목 추가</button>
+    </div>
+  </div>
+
+  <div class="page-footer">
+    <div class="contact-info">
+      <div class="contact-item"><b>대표이사</b>010-8253-3530</div>
+      <div class="contact-item"><b>영업이사</b>010-4644-9978</div>
+      <div class="contact-item"><b>배수빈 팀장</b>010-6828-0014</div>
+      <div class="contact-item"><b>육경일 과장</b>010-9411-0006</div>
+    </div>
+    <div style="font-size:12px;color:var(--muted)">jungsolfood.com</div>
+  </div>
+</main>
+
+<!-- 편집 모달 -->
+<div class="edit-overlay" id="editOverlay" onclick="closeModal(event)">
+  <div class="edit-modal" onclick="event.stopPropagation()">
+    <h3 id="modalTitle">품목 수정</h3>
+    <div class="form-grid">
+      <div class="form-group">
+        <label>품목</label>
+        <input type="text" id="f-item" placeholder="삼겹살">
+      </div>
+      <div class="form-group">
+        <label>브랜드</label>
+        <input type="text" id="f-brand" placeholder="핸들바우어">
+      </div>
+      <div class="form-group">
+        <label>원산지</label>
+        <input type="text" id="f-origin" placeholder="오스트리아">
+      </div>
+      <div class="form-group">
+        <label>포장</label>
+        <select id="f-pack">
+          <option value="VP">VP</option>
+          <option value="BULK">BULK</option>
+          <option value="A">A</option>
+          <option value="PR">PR</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>보관 창고</label>
+        <input type="text" id="f-storage" placeholder="고려">
+      </div>
+      <div class="form-group">
+        <label>자사 창고</label>
+        <input type="text" id="f-own" placeholder="마장동">
+      </div>
+      <div class="form-group full">
+        <label>비고</label>
+        <input type="text" id="f-note" placeholder="입항예정 등">
+      </div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-delete" id="deleteBtn" onclick="deleteRow()">삭제</button>
+      <button class="btn-cancel" onclick="closeModal()">취소</button>
+      <button class="btn-save" onclick="saveRow()">저장</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// 품목 데이터
+const data = {
+  pork: [
+    {item:'삼겹살', brand:'핸들바우어', origin:'오스트리아', pack:'VP', storage:'고려', own:'마장동', note:''},
+    {item:'삼겹살', brand:'마프리제스 (듀록)', origin:'스페인', pack:'VP', storage:'대청', own:'마장동', note:''},
+    {item:'삼겹살', brand:'엘포조 (듀록)', origin:'스페인', pack:'VP', storage:'고려', own:'마장동', note:'입항예정'},
+    {item:'삼겹살', brand:'맥스아그로', origin:'칠레', pack:'VP', storage:'기흥/CS', own:'마장동', note:''},
+    {item:'삼겹살', brand:'두메코', origin:'네덜란드', pack:'VP', storage:'삼일', own:'마장동', note:''},
+    {item:'미박삼겹살', brand:'핸들바우어', origin:'오스트리아', pack:'VP', storage:'고려', own:'마장동', note:''},
+    {item:'미추리삼겹', brand:'치코', origin:'스페인', pack:'VP', storage:'고려', own:'마장동', note:''},
+    {item:'목살', brand:'치코 (듀록)', origin:'스페인', pack:'VP', storage:'아주용인', own:'마장동', note:''},
+    {item:'목살', brand:'마프리제스 (듀록)', origin:'스페인', pack:'VP', storage:'대청', own:'마장동', note:''},
+    {item:'미니족', brand:'누드블리스', origin:'벨기에', pack:'BULK', storage:'고려', own:'마장동', note:''},
+    {item:'미니족', brand:'테니시/테니쉬', origin:'독일', pack:'BULK', storage:'고려', own:'마장동', note:''},
+    {item:'미니족', brand:'베슬러', origin:'독일', pack:'BULK', storage:'대청', own:'마장동', note:''},
+    {item:'장족', brand:'키니톤', origin:'멕시코', pack:'BULK', storage:'아주용인', own:'마장동', note:''},
+    {item:'장족', brand:'치코 1.6-1.8', origin:'스페인', pack:'BULK', storage:'고려', own:'', note:''},
+    {item:'장족', brand:'치코 1.8~2.0', origin:'스페인', pack:'BULK', storage:'고려', own:'마장동', note:''},
+    {item:'장족', brand:'치코 2.0~2.5', origin:'스페인', pack:'BULK', storage:'고려', own:'', note:''},
+    {item:'장족', brand:'엘포조', origin:'스페인', pack:'BULK', storage:'고려', own:'', note:'입항예정'},
+    {item:'장족', brand:'프리빈 2.0-2.2', origin:'스페인', pack:'BULK', storage:'고려', own:'', note:'6월 입항예정'},
+    {item:'국내산 전족', brand:'부경 전족', origin:'국내산', pack:'BULK', storage:'고려', own:'마장동', note:''},
+    {item:'국내산 전족', brand:'도드람 전족', origin:'국내산', pack:'BULK', storage:'고려', own:'마장동', note:''},
+    {item:'국내산 후족', brand:'브랜드 후족', origin:'국내산', pack:'BULK', storage:'고려', own:'', note:''},
+    {item:'미박사태', brand:'프리빈', origin:'스페인', pack:'BULK', storage:'고려', own:'마장동', note:''},
+    {item:'돈학', brand:'프리빈', origin:'스페인', pack:'BULK', storage:'고려', own:'마장동', note:'6월 입항예정'},
+    {item:'항정', brand:'프리빈', origin:'스페인', pack:'VP', storage:'고려', own:'마장동', note:'6월 입항예정'},
+    {item:'항정', brand:'놀슨', origin:'멕시코', pack:'VP', storage:'아주용인', own:'마장동', note:''},
+    {item:'가브리', brand:'놀슨', origin:'멕시코', pack:'VP', storage:'아주용인', own:'마장동', note:''},
+    {item:'가브리', brand:'프리빈', origin:'스페인', pack:'VP', storage:'강동1', own:'마장동', note:''},
+    {item:'가브리', brand:'홀스톤', origin:'미국', pack:'VP', storage:'남사', own:'마장동', note:''},
+    {item:'갈매기', brand:'키니톤', origin:'멕시코', pack:'VP', storage:'아주용인', own:'마장동', note:''},
+  ],
+  majang: [
+    {item:'차돌양지', brand:'TBS', origin:'호주', pack:'A', storage:'', own:'마장동', note:''},
+    {item:'부채', brand:'쇼케이스', origin:'미국', pack:'PR', storage:'', own:'마장동', note:''},
+    {item:'갈매기', brand:'케캔', origin:'멕시코', pack:'VP', storage:'', own:'마장동', note:''},
+  ]
+};
+
+let editMode = false;
+let editTarget = null; // {section, index}
+let addTarget = null;  // section
+
+function packTag(pack) {
+  const map = {VP:'tag-vp', BULK:'tag-bulk', A:'tag-a', PR:'tag-pr'};
+  return `<span class="tag ${map[pack]||'tag-vp'}">${pack}</span>`;
+}
+
+function noteTag(note) {
+  if (!note) return '';
+  if (note.includes('6월')) return `<span class="badge-incoming-june">${note}</span>`;
+  if (note.includes('입항')) return `<span class="badge-incoming">${note}</span>`;
+  return `<span class="text-muted">${note}</span>`;
+}
+
+function renderTable(section) {
+  const tbody = document.getElementById(section+'-body');
+  const rows = data[section];
+  tbody.innerHTML = rows.map((r,i) => `
+    <tr>
+      <td class="sub-cat edit-cell" data-sec="${section}" data-idx="${i}" data-field="item">${r.item||'-'}</td>
+      <td class="edit-cell" data-sec="${section}" data-idx="${i}" data-field="brand">${r.brand||'-'}</td>
+      <td class="edit-cell" data-sec="${section}" data-idx="${i}" data-field="origin">${r.origin||'-'}</td>
+      <td class="edit-cell" data-sec="${section}" data-idx="${i}" data-field="pack">${packTag(r.pack)}</td>
+      <td class="edit-cell" data-sec="${section}" data-idx="${i}" data-field="storage">${r.storage||'-'}</td>
+      <td class="edit-cell" data-sec="${section}" data-idx="${i}" data-field="own">${r.own||'-'}</td>
+      <td class="edit-cell" data-sec="${section}" data-idx="${i}" data-field="note">${noteTag(r.note)}</td>
+    </tr>
+  `).join('');
+
+  // 클릭 이벤트
+  tbody.querySelectorAll('tr').forEach(tr => {
+    tr.addEventListener('click', () => {
+      if (!editMode) return;
+      const idx = parseInt(tr.querySelector('.edit-cell').dataset.idx);
+      openEdit(section, idx);
+    });
+  });
+
+  // 카운트 업데이트
+  document.getElementById(section+'-count').textContent = rows.length + '개';
+}
+
+function renderAll() {
+  renderTable('pork');
+  renderTable('majang');
+}
+
+function toggleEdit() {
+  editMode = !editMode;
+  document.body.classList.toggle('edit-mode', editMode);
+  document.getElementById('editIndicator').classList.toggle('show', editMode);
+  document.getElementById('editBtn').textContent = editMode ? '✅ 편집 완료' : '✏️ 편집 모드';
+  document.getElementById('pork-add').style.display = editMode ? 'flex' : 'none';
+  document.getElementById('majang-add').style.display = editMode ? 'flex' : 'none';
+}
+
+function openEdit(section, idx) {
+  editTarget = {section, idx};
+  addTarget = null;
+  const r = data[section][idx];
+  document.getElementById('modalTitle').textContent = '품목 수정';
+  document.getElementById('f-item').value = r.item;
+  document.getElementById('f-brand').value = r.brand;
+  document.getElementById('f-origin').value = r.origin;
+  document.getElementById('f-pack').value = r.pack;
+  document.getElementById('f-storage').value = r.storage;
+  document.getElementById('f-own').value = r.own;
+  document.getElementById('f-note').value = r.note;
+  document.getElementById('deleteBtn').style.display = 'inline-flex';
+  document.getElementById('editOverlay').classList.add('show');
+}
+
+function openAdd(section) {
+  addTarget = section;
+  editTarget = null;
+  document.getElementById('modalTitle').textContent = '품목 추가';
+  document.getElementById('f-item').value = '';
+  document.getElementById('f-brand').value = '';
+  document.getElementById('f-origin').value = '';
+  document.getElementById('f-pack').value = 'VP';
+  document.getElementById('f-storage').value = '';
+  document.getElementById('f-own').value = '마장동';
+  document.getElementById('f-note').value = '';
+  document.getElementById('deleteBtn').style.display = 'none';
+  document.getElementById('editOverlay').classList.add('show');
+}
+
+function saveRow() {
+  const r = {
+    item: document.getElementById('f-item').value,
+    brand: document.getElementById('f-brand').value,
+    origin: document.getElementById('f-origin').value,
+    pack: document.getElementById('f-pack').value,
+    storage: document.getElementById('f-storage').value,
+    own: document.getElementById('f-own').value,
+    note: document.getElementById('f-note').value,
+  };
+  if (editTarget) {
+    data[editTarget.section][editTarget.idx] = r;
+    renderTable(editTarget.section);
+  } else if (addTarget) {
+    data[addTarget].push(r);
+    renderTable(addTarget);
+  }
+  closeModal();
+}
+
+function deleteRow() {
+  if (!editTarget) return;
+  if (!confirm('이 항목을 삭제할까요?')) return;
+  data[editTarget.section].splice(editTarget.idx, 1);
+  renderTable(editTarget.section);
+  closeModal();
+}
+
+function closeModal(e) {
+  if (e && e.target !== document.getElementById('editOverlay')) return;
+  document.getElementById('editOverlay').classList.remove('show');
+  editTarget = null;
+  addTarget = null;
+}
+
+function printPage() {
+  window.print();
+}
+
+// 날짜
+const d = new Date();
+document.getElementById('updateDate').textContent =
+  `${d.getFullYear()}년 ${d.getMonth()+1}월 ${d.getDate()}일 기준`;
+
+renderAll();
+</script>
+
+<style>
+@media print {
+  .header, .edit-indicator, .add-row-btn, .page-head .btn { display: none !important; }
+  body { background: white; }
+  .tbl-wrap { box-shadow: none; border: 1px solid #ccc; }
+  .page { padding: 20px; }
+}
+</style>
+</body>
+</html>
