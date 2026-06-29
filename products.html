@@ -23,6 +23,11 @@
     /* Header */
     .header{position:sticky;top:0;z-index:50;background:rgba(251,250,246,.92);backdrop-filter:blur(16px);border-bottom:1px solid var(--line);padding:0 24px}
     .header-inner{max-width:1200px;margin:0 auto;height:72px;display:flex;align-items:center;justify-content:space-between;gap:16px;position:relative}
+    .desk-nav{display:flex;align-items:center;gap:24px;font-size:15px;font-weight:500;color:#24322f;position:absolute;left:50%;transform:translateX(-50%)}
+    .desk-nav a{transition:.2s;white-space:nowrap}.desk-nav a:hover,.desk-nav a.active{color:var(--green);font-weight:700}
+    .hamburger{display:none;flex-direction:column;justify-content:center;gap:5px;width:40px;height:40px;background:none;border:none;cursor:pointer;padding:6px;border-radius:8px}.hamburger span{display:block;width:22px;height:2px;background:var(--green);border-radius:2px;transition:.3s;transform-origin:center}.hamburger.open span:nth-child(1){transform:translateY(7px) rotate(45deg)}.hamburger.open span:nth-child(2){opacity:0}.hamburger.open span:nth-child(3){transform:translateY(-7px) rotate(-45deg)}
+    .mobile-nav{display:none;position:fixed;inset:0;top:72px;z-index:49;background:rgba(251,250,246,.97);backdrop-filter:blur(20px);flex-direction:column;padding:24px;gap:0;border-top:1px solid var(--line)}.mobile-nav.open{display:flex}.mobile-nav a{font-size:18px;font-weight:600;color:var(--ink);padding:16px 0;border-bottom:1px solid var(--line);transition:.2s}.mobile-nav a:hover,.mobile-nav a.active{color:var(--green)}
+    @media(max-width:900px){.desk-nav{display:none}.hamburger{display:flex}.btn{height:36px;padding:0 12px;font-size:12px}.header-inner .brand img{height:36px}}
     .brand{display:flex;align-items:center;gap:10px;font-size:18px;font-weight:700;color:var(--green)}
     .brand-sub{font-size:13px;font-weight:500;color:var(--muted);border-left:1px solid var(--line);padding-left:10px;margin-left:2px}
     .header-actions{display:flex;gap:10px;align-items:center}
@@ -116,27 +121,32 @@
 
 <header class="header">
   <div class="header-inner">
-    <div style="display:flex;align-items:center;gap:28px">
-      <a class="brand" href="index.html">
-        <img src="assets/jungsol_bi_logo.png" alt="(주) 정솔푸드" style="height:44px;display:block;">
-      </a>
-    </div>
-    <nav style="display:flex;align-items:center;gap:28px;font-size:15px;font-weight:500;color:#24322f;position:absolute;left:50%;transform:translateX(-50%)">
-      <a href="index.html#about" style="transition:.2s" onmouseover="this.style.color='#184b36'" onmouseout="this.style.color='#24322f'">회사 소개</a>
-      <a href="index.html#growth" style="transition:.2s" onmouseover="this.style.color='#184b36'" onmouseout="this.style.color='#24322f'">성장 현황</a>
-      <a href="index.html#business" style="transition:.2s" onmouseover="this.style.color='#184b36'" onmouseout="this.style.color='#24322f'">사업 영역</a>
-      <a href="products.html" style="color:#184b36;font-weight:700">품목표</a>
-      <a href="index.html#values" style="transition:.2s" onmouseover="this.style.color='#184b36'" onmouseout="this.style.color='#24322f'">비전</a>
-      <a href="index.html#contact" style="transition:.2s" onmouseover="this.style.color='#184b36'" onmouseout="this.style.color='#24322f'">문의</a>
+    <a class="brand" href="index.html">
+      <img src="assets/jungsol_bi_logo.png" alt="(주) 정솔푸드" style="height:44px;display:block;">
+    </a>
+    <nav class="desk-nav">
+      <a href="index.html#about">회사 소개</a>
+      <a href="index.html#growth">성장 현황</a>
+      <a href="index.html#business">사업 영역</a>
+      <a href="products.html" class="active">품목표</a>
+      <a href="index.html#values">비전</a>
+      <a href="index.html#contact">문의</a>
     </nav>
     <div class="header-actions">
       <button class="btn" id="editBtn" onclick="promptEdit()">✏️ 편집 모드</button>
       <button class="btn primary" onclick="printPage()">🖨️ 인쇄</button>
+      <button class="hamburger" id="hamburger" onclick="toggleMenu()"><span></span><span></span><span></span></button>
     </div>
   </div>
 </header>
-
-<!-- 비밀번호 모달 -->
+<nav class="mobile-nav" id="mobileNav">
+  <a href="index.html#about" onclick="closeMenu()">회사 소개</a>
+  <a href="index.html#growth" onclick="closeMenu()">성장 현황</a>
+  <a href="index.html#business" onclick="closeMenu()">사업 영역</a>
+  <a href="products.html" class="active">품목표</a>
+  <a href="index.html#values" onclick="closeMenu()">비전</a>
+  <a href="index.html#contact" onclick="closeMenu()">문의</a>
+</nav>
 <div class="edit-overlay" id="pwOverlay" onclick="closePwModal(event)" style="display:none">
   <div class="edit-modal" onclick="event.stopPropagation()" style="max-width:360px">
     <h3>편집 모드 잠금 해제</h3>
@@ -216,12 +226,7 @@
   </div>
 
   <div class="page-footer">
-    <div class="contact-info">
-      <div class="contact-item"><b>대표이사</b>010-8253-3530</div>
-      <div class="contact-item"><b>영업이사</b>010-4644-9978</div>
-      <div class="contact-item"><b>배수빈 팀장</b>010-6828-0014</div>
-      <div class="contact-item"><b>육경일 과장</b>010-9411-0006</div>
-    </div>
+    <div style="font-size:13px;color:var(--muted)">© (주) 정솔푸드</div>
     <div style="font-size:12px;color:var(--muted)">jungsolfood.com</div>
   </div>
 </main>
@@ -370,6 +375,9 @@ function renderAll() {
   renderTable('pork');
   renderTable('majang');
 }
+
+function toggleMenu(){const h=document.getElementById('hamburger');const n=document.getElementById('mobileNav');h.classList.toggle('open');n.classList.toggle('open');document.body.style.overflow=n.classList.contains('open')?'hidden':'';}
+function closeMenu(){document.getElementById('hamburger').classList.remove('open');document.getElementById('mobileNav').classList.remove('open');document.body.style.overflow='';}
 
 function promptEdit() {
   if (editMode) {
