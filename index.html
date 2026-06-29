@@ -157,8 +157,14 @@
     setHeroHeight();
     window.addEventListener('resize', setHeroHeight);
     if(heroVid){
-      heroVid.addEventListener('canplay',()=>heroVid.classList.add('loaded'),{once:true});
-      if(heroVid.readyState>=3)heroVid.classList.add('loaded');
+      function showVid(){heroVid.classList.add('loaded');}
+      heroVid.addEventListener('canplay',showVid,{once:true});
+      heroVid.addEventListener('canplaythrough',showVid,{once:true});
+      heroVid.addEventListener('loadeddata',showVid,{once:true});
+      if(heroVid.readyState>=1)showVid();
+      setTimeout(showVid, 1500);
+      heroVid.load();
+      heroVid.play().catch(()=>{});
     }
     const KAKAO_CHANNEL_URL="https://pf.kakao.com/_PwxmxfX/chat";document.querySelectorAll('.kakao-link').forEach(el=>{el.href=KAKAO_CHANNEL_URL});
     const header=document.querySelector('.header');const onScroll=()=>header.classList.toggle('scrolled',window.scrollY>16);onScroll();window.addEventListener('scroll',onScroll,{passive:true});

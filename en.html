@@ -148,13 +148,23 @@
   <script>
     window.addEventListener("load",()=>{setTimeout(()=>{document.getElementById("intro")?.classList.add("hide");document.body.classList.add("intro-done");},950)});
     const WHATSAPP_URL="https://wa.me/821082533530";document.querySelectorAll('.whatsapp-link').forEach(el=>{el.href=WHATSAPP_URL});
-    // Hero video
+    // Hero video - mobile compatible
     const heroVid=document.querySelector('.hero-video');
     const heroSec=document.querySelector('#top');
     const hdr=document.querySelector('.header');
     function setHeroHeight(){const vh=window.innerHeight;const hdrH=hdr?hdr.offsetHeight:82;heroSec.style.height=(vh-hdrH)+'px';}
     setHeroHeight();window.addEventListener('resize',setHeroHeight);
-    if(heroVid){heroVid.addEventListener('canplay',()=>heroVid.classList.add('loaded'),{once:true});if(heroVid.readyState>=3)heroVid.classList.add('loaded');}
+    if(heroVid){
+      function showVid(){heroVid.classList.add('loaded');}
+      heroVid.addEventListener('canplay',showVid,{once:true});
+      heroVid.addEventListener('canplaythrough',showVid,{once:true});
+      heroVid.addEventListener('loadeddata',showVid,{once:true});
+      if(heroVid.readyState>=1)showVid();
+      // iOS 폴백: 1.5초 후 강제 표시
+      setTimeout(showVid, 1500);
+      heroVid.load();
+      heroVid.play().catch(()=>{});
+    }
     const header=document.querySelector('.header');const onScroll=()=>header.classList.toggle('scrolled',window.scrollY>16);onScroll();window.addEventListener('scroll',onScroll,{passive:true});
     const io=new IntersectionObserver(entries=>{entries.forEach(entry=>{if(entry.isIntersecting){entry.target.classList.add('show');if(entry.target.id==='growthChart')entry.target.classList.add('active');io.unobserve(entry.target)}})},{threshold:.18});document.querySelectorAll('.reveal, #growthChart').forEach(el=>io.observe(el));
   </script>
