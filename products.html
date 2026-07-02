@@ -99,12 +99,14 @@
     .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
 
     /* Contact rows in company modal */
-    .contact-row{display:grid;grid-template-columns:1fr 1fr 1fr auto;gap:8px;align-items:center}
-    .contact-row input{height:38px;padding:0 10px;border:1px solid var(--line);border-radius:8px;font-size:13px;font-family:inherit;color:var(--ink);outline:none}
+    .contact-row-header{display:grid;grid-template-columns:0.8fr 1fr 1.3fr 38px;gap:8px;padding:0 2px;margin-bottom:2px}
+    .contact-row-header span{font-size:11px;font-weight:700;color:var(--muted);letter-spacing:.04em}
+    .contact-row{display:grid;grid-template-columns:0.8fr 1fr 1.3fr auto;gap:8px;align-items:center}
+    .contact-row input{height:38px;padding:0 10px;border:1px solid var(--line);border-radius:8px;font-size:13px;font-family:inherit;color:var(--ink);outline:none;min-width:0}
     .contact-row input:focus{border-color:var(--green)}
-    .contact-row-remove{width:38px;height:38px;border-radius:8px;border:1px solid #fca5a5;color:#dc2626;background:none;cursor:pointer;font-size:14px;font-family:inherit}
+    .contact-row-remove{width:38px;height:38px;flex-shrink:0;border-radius:8px;border:1px solid #fca5a5;color:#dc2626;background:none;cursor:pointer;font-size:14px;font-family:inherit}
     .contact-row-remove:hover{background:#fef2f2}
-    @media(max-width:700px){.contact-row{grid-template-columns:1fr 1fr}.contact-row-remove{grid-column:1/-1}}
+    @media(max-width:700px){.contact-row{grid-template-columns:1fr 1fr}.contact-row-remove{grid-column:1/-1}.contact-row-header{display:none}}
 
     /* Footer */
     .page-footer{margin-top:48px;padding:28px 0;border-top:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:16px}
@@ -317,6 +319,9 @@
         <label>팩스</label>
         <input type="text" id="ci-fax" placeholder="02-6499-6530">
       </div>
+    </div>
+    <div class="contact-row-header">
+      <span>직책</span><span>이름</span><span>연락처</span><span></span>
     </div>
     <div id="ci-contacts" style="display:flex;flex-direction:column;gap:10px;margin-bottom:16px"></div>
     <button class="add-row-btn" onclick="addContactRow()" style="border-radius:8px;margin-bottom:20px">+ 담당자 추가</button>
