@@ -91,8 +91,20 @@
     .btn-cancel{background:none;border:1px solid var(--line);color:var(--muted);border-radius:8px;height:40px;padding:0 16px;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit}
     .btn-save{background:var(--green);color:#fff;border:none;border-radius:8px;height:40px;padding:0 20px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;transition:.2s}
     .btn-save:hover{background:var(--green2)}
-    .add-row-btn{display:flex;align-items:center;gap:8px;width:100%;padding:12px 16px;background:none;border:1px dashed var(--line);border-top:none;color:var(--muted);font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;transition:.2s;border-radius:0 0 14px 14px}
-    .add-row-btn:hover{background:var(--green-light);color:var(--green)}
+    .add-row-btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:14px 16px;background:var(--green-light);border:1px solid var(--line);border-top:none;color:var(--green);font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;transition:.2s;border-radius:0 0 14px 14px}
+    .add-row-btn:hover{background:var(--green);color:#fff}
+
+    /* Toast */
+    .toast{position:fixed;left:50%;bottom:32px;transform:translateX(-50%) translateY(20px);background:var(--ink);color:#fff;font-size:13px;font-weight:600;padding:12px 20px;border-radius:999px;z-index:300;opacity:0;transition:.25s;pointer-events:none;box-shadow:0 10px 30px rgba(0,0,0,.2)}
+    .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+    /* Contact rows in company modal */
+    .contact-row{display:grid;grid-template-columns:1fr 1fr 1fr auto;gap:8px;align-items:center}
+    .contact-row input{height:38px;padding:0 10px;border:1px solid var(--line);border-radius:8px;font-size:13px;font-family:inherit;color:var(--ink);outline:none}
+    .contact-row input:focus{border-color:var(--green)}
+    .contact-row-remove{width:38px;height:38px;border-radius:8px;border:1px solid #fca5a5;color:#dc2626;background:none;cursor:pointer;font-size:14px;font-family:inherit}
+    .contact-row-remove:hover{background:#fef2f2}
+    @media(max-width:700px){.contact-row{grid-template-columns:1fr 1fr}.contact-row-remove{grid-column:1/-1}}
 
     /* Footer */
     .page-footer{margin-top:48px;padding:28px 0;border-top:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:16px}
@@ -133,6 +145,8 @@
     </nav>
     <div class="header-actions">
       <button class="btn" id="editBtn" onclick="promptEdit()" style="font-size:11px;height:34px;padding:0 10px;gap:4px">✏️ 편집</button>
+      <button class="btn" id="companyEditBtn" onclick="openCompanyEdit()" style="font-size:11px;height:34px;padding:0 10px;gap:4px;display:none">🏢 회사정보</button>
+      <button class="btn" id="exportBtn" onclick="exportImage()" style="font-size:11px;height:34px;padding:0 10px;gap:4px;display:none">🖼️ 커뮤니티 공유용</button>
       <button class="btn primary" onclick="printPage()" style="font-size:11px;height:34px;padding:0 10px;gap:4px">🖨️ 인쇄</button>
       <button class="hamburger" id="hamburger" onclick="toggleMenu()"><span></span><span></span><span></span></button>
     </div>
@@ -195,7 +209,7 @@
         </thead>
         <tbody id="pork-body"></tbody>
       </table>
-      <button class="add-row-btn" id="pork-add" onclick="openAdd('pork')" style="display:none">+ 품목 추가</button>
+      <button class="add-row-btn" id="pork-add" onclick="openAdd('pork')" style="display:none">+ 새 품목 추가</button>
     </div>
   </div>
 
@@ -220,7 +234,7 @@
         </thead>
         <tbody id="majang-body"></tbody>
       </table>
-      <button class="add-row-btn" id="majang-add" onclick="openAdd('majang')" style="display:none">+ 품목 추가</button>
+      <button class="add-row-btn" id="majang-add" onclick="openAdd('majang')" style="display:none">+ 새 품목 추가</button>
     </div>
   </div>
 
@@ -272,6 +286,10 @@
         <label>비고</label>
         <input type="text" id="f-note" placeholder="입항예정 등">
       </div>
+      <div class="form-group full">
+        <label>사진 링크 (선택)</label>
+        <input type="text" id="f-photo" placeholder="https://... (품목 사진 URL)">
+      </div>
     </div>
     <div class="modal-actions">
       <button class="btn-delete" id="deleteBtn" onclick="deleteRow()">삭제</button>
@@ -281,6 +299,51 @@
   </div>
 </div>
 
+<!-- 회사 정보 편집 모달 -->
+<div class="edit-overlay" id="companyOverlay" onclick="closeCompanyModal(event)">
+  <div class="edit-modal" onclick="event.stopPropagation()" style="width:min(560px,92vw)">
+    <h3>회사 정보 / 담당자 연락처 편집</h3>
+    <p style="font-size:13px;color:var(--muted);margin:-10px 0 16px">커뮤니티 공유용 카드와 인쇄물 상단에 표시되는 정보입니다.</p>
+    <div class="form-grid">
+      <div class="form-group full">
+        <label>주소</label>
+        <input type="text" id="ci-address" placeholder="서울특별시 성동구 마장로 191, 1층 102호">
+      </div>
+      <div class="form-group">
+        <label>전화</label>
+        <input type="text" id="ci-tel" placeholder="02-6237-3530">
+      </div>
+      <div class="form-group">
+        <label>팩스</label>
+        <input type="text" id="ci-fax" placeholder="02-6499-6530">
+      </div>
+    </div>
+    <div id="ci-contacts" style="display:flex;flex-direction:column;gap:10px;margin-bottom:16px"></div>
+    <button class="add-row-btn" onclick="addContactRow()" style="border-radius:8px;margin-bottom:20px">+ 담당자 추가</button>
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeCompanyModal()">취소</button>
+      <button class="btn-save" onclick="saveCompanyInfo()">저장</button>
+    </div>
+  </div>
+</div>
+
+<!-- 이미지 내보내기 결과 모달 -->
+<div class="edit-overlay" id="exportOverlay" onclick="closeExportModal(event)">
+  <div class="edit-modal" onclick="event.stopPropagation()" style="width:min(600px,92vw);max-height:88vh;overflow-y:auto">
+    <h3>커뮤니티 공유용 이미지</h3>
+    <p id="export-status" style="font-size:13px;color:var(--muted);margin:-10px 0 16px">이미지를 생성하는 중입니다...</p>
+    <img id="export-preview-img" style="width:100%;border-radius:10px;border:1px solid var(--line);margin-bottom:16px;display:none">
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeExportModal()">닫기</button>
+      <a class="btn-save" id="export-download-link" download="정솔푸드_품목표.png" style="text-decoration:none;display:none">이미지 다운로드</a>
+    </div>
+  </div>
+</div>
+
+<!-- 커뮤니티 공유용 카드 렌더링 영역 (화면에는 보이지 않음, 캡처 전용) -->
+<div id="exportCard" style="position:fixed;left:-99999px;top:0;width:640px;"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <script>
 // 품목 데이터
 const API_URL = 'https://script.google.com/macros/s/AKfycbxKYkP-diOSh9AkSlhCouF-tcHku_IZmB5uOZOZ221ub4s_ttq0bXzRk3RqTVuB0mW8Vw/exec';
@@ -289,6 +352,29 @@ let data = { pork: [], majang: [] };
 let editMode = false;
 let editTarget = null;
 let addTarget = null;
+
+// ── 회사 정보 / 담당자 연락처 (커뮤니티 공유 카드·인쇄용) ──
+const DEFAULT_COMPANY_INFO = {
+  address: '서울특별시 성동구 마장로 191, 1층 102호',
+  tel: '02-6237-3530',
+  fax: '02-6499-6530',
+  contacts: [
+    { role: '대표이사', name: '이산', phone: '010-8253-3530' },
+    { role: '영업이사', name: '이원규', phone: '010-4644-9978' },
+    { role: '팀장', name: '배수빈', phone: '010-6828-0014' },
+    { role: '과장', name: '육경일', phone: '010-9411-0006' },
+  ],
+};
+
+function loadCompanyInfo() {
+  try {
+    const saved = localStorage.getItem('jungsol_company_info');
+    if (saved) return JSON.parse(saved);
+  } catch (e) {}
+  return JSON.parse(JSON.stringify(DEFAULT_COMPANY_INFO));
+}
+
+let companyInfo = loadCompanyInfo();
 
 // 로딩 상태 표시
 function setLoading(show) {
@@ -352,9 +438,11 @@ function noteTag(note) {
 function renderTable(section) {
   const tbody = document.getElementById(section+'-body');
   const rows = data[section];
-  tbody.innerHTML = rows.map((r,i) => `
+  tbody.innerHTML = rows.map((r,i) => {
+    const photoHtml = r.photo ? ` <a href="${r.photo}" target="_blank" rel="noopener" onclick="event.stopPropagation()" title="사진 보기" style="margin-left:4px">📷</a>` : '';
+    return `
     <tr>
-      <td class="sub-cat edit-cell" data-sec="${section}" data-idx="${i}" data-field="item">${r.item||'-'}</td>
+      <td class="sub-cat edit-cell" data-sec="${section}" data-idx="${i}" data-field="item">${r.item||'-'}${photoHtml}</td>
       <td class="edit-cell" data-sec="${section}" data-idx="${i}" data-field="brand">${r.brand||'-'}</td>
       <td class="edit-cell" data-sec="${section}" data-idx="${i}" data-field="origin">${r.origin||'-'}</td>
       <td class="edit-cell" data-sec="${section}" data-idx="${i}" data-field="pack">${packTag(r.pack)}</td>
@@ -362,7 +450,8 @@ function renderTable(section) {
       <td class="edit-cell" data-sec="${section}" data-idx="${i}" data-field="own">${r.own||'-'}</td>
       <td class="edit-cell" data-sec="${section}" data-idx="${i}" data-field="note">${noteTag(r.note)}</td>
     </tr>
-  `).join('');
+  `;
+  }).join('');
 
   // 클릭 이벤트
   tbody.querySelectorAll('tr').forEach(tr => {
@@ -420,6 +509,8 @@ function toggleEdit() {
   document.getElementById('editBtn').textContent = editMode ? '✅ 편집 완료' : '✏️ 편집 모드';
   document.getElementById('pork-add').style.display = editMode ? 'flex' : 'none';
   document.getElementById('majang-add').style.display = editMode ? 'flex' : 'none';
+  document.getElementById('companyEditBtn').style.display = editMode ? 'inline-flex' : 'none';
+  document.getElementById('exportBtn').style.display = editMode ? 'inline-flex' : 'none';
 }
 
 function openEdit(section, idx) {
@@ -434,6 +525,7 @@ function openEdit(section, idx) {
   document.getElementById('f-storage').value = r.storage;
   document.getElementById('f-own').value = r.own;
   document.getElementById('f-note').value = r.note;
+  document.getElementById('f-photo').value = r.photo || '';
   document.getElementById('deleteBtn').style.display = 'inline-flex';
   document.getElementById('editOverlay').classList.add('show');
 }
@@ -449,8 +541,10 @@ function openAdd(section) {
   document.getElementById('f-storage').value = '';
   document.getElementById('f-own').value = '마장동';
   document.getElementById('f-note').value = '';
+  document.getElementById('f-photo').value = '';
   document.getElementById('deleteBtn').style.display = 'none';
   document.getElementById('editOverlay').classList.add('show');
+  setTimeout(() => document.getElementById('f-item').focus(), 50);
 }
 
 function saveRow() {
@@ -462,7 +556,12 @@ function saveRow() {
     storage: document.getElementById('f-storage').value,
     own: document.getElementById('f-own').value,
     note: document.getElementById('f-note').value,
+    photo: document.getElementById('f-photo').value,
   };
+  if (!r.item.trim()) {
+    alert('품목명을 입력해주세요.');
+    return;
+  }
   if (editTarget) {
     data[editTarget.section][editTarget.idx] = r;
     renderTable(editTarget.section);
@@ -472,6 +571,7 @@ function saveRow() {
   }
   closeModal();
   saveToSheet();
+  toast('저장되었습니다');
 }
 
 function deleteRow() {
@@ -481,6 +581,22 @@ function deleteRow() {
   renderTable(editTarget.section);
   closeModal();
   saveToSheet();
+  toast('삭제되었습니다');
+}
+
+let toastTimer = null;
+function toast(msg) {
+  let el = document.getElementById('toast');
+  if (!el) {
+    el = document.createElement('div');
+    el.id = 'toast';
+    el.className = 'toast';
+    document.body.appendChild(el);
+  }
+  el.textContent = msg;
+  el.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => el.classList.remove('show'), 2200);
 }
 
 function closeModal(e) {
@@ -494,6 +610,204 @@ function printPage() {
   window.print();
 }
 
+// ── 회사 정보 편집 모달 ──
+function openCompanyEdit() {
+  document.getElementById('ci-address').value = companyInfo.address;
+  document.getElementById('ci-tel').value = companyInfo.tel;
+  document.getElementById('ci-fax').value = companyInfo.fax;
+  renderContactRows();
+  document.getElementById('companyOverlay').classList.add('show');
+}
+
+function renderContactRows() {
+  const wrap = document.getElementById('ci-contacts');
+  wrap.innerHTML = companyInfo.contacts.map((c, i) => `
+    <div class="contact-row">
+      <input type="text" placeholder="직책 (예: 영업이사)" value="${c.role.replace(/"/g,'&quot;')}" data-i="${i}" data-f="role">
+      <input type="text" placeholder="이름" value="${c.name.replace(/"/g,'&quot;')}" data-i="${i}" data-f="name">
+      <input type="text" placeholder="연락처" value="${c.phone.replace(/"/g,'&quot;')}" data-i="${i}" data-f="phone">
+      <button class="contact-row-remove" onclick="removeContactRow(${i})">✕</button>
+    </div>
+  `).join('');
+}
+
+function addContactRow() {
+  syncContactInputs();
+  companyInfo.contacts.push({ role: '', name: '', phone: '' });
+  renderContactRows();
+}
+
+function removeContactRow(i) {
+  syncContactInputs();
+  companyInfo.contacts.splice(i, 1);
+  renderContactRows();
+}
+
+function syncContactInputs() {
+  document.querySelectorAll('#ci-contacts input').forEach(inp => {
+    const i = parseInt(inp.dataset.i);
+    const f = inp.dataset.f;
+    if (companyInfo.contacts[i]) companyInfo.contacts[i][f] = inp.value;
+  });
+}
+
+function saveCompanyInfo() {
+  syncContactInputs();
+  companyInfo.address = document.getElementById('ci-address').value;
+  companyInfo.tel = document.getElementById('ci-tel').value;
+  companyInfo.fax = document.getElementById('ci-fax').value;
+  try {
+    localStorage.setItem('jungsol_company_info', JSON.stringify(companyInfo));
+  } catch (e) {}
+  closeCompanyModal();
+  toast('회사 정보가 저장되었습니다 (이 브라우저에 저장됨)');
+}
+
+function closeCompanyModal(e) {
+  if (e && e.target !== document.getElementById('companyOverlay')) return;
+  document.getElementById('companyOverlay').classList.remove('show');
+}
+
+function closeExportModal(e) {
+  if (e && e.target !== document.getElementById('exportOverlay')) return;
+  document.getElementById('exportOverlay').classList.remove('show');
+}
+
+// ── 커뮤니티 공유용 브랜드 카드 이미지 생성 ──
+const CATEGORY_LABELS = { pork: '돈육', majang: '마장동 보유 품목' };
+
+function groupByItem(rows) {
+  const groups = [];
+  const idxByItem = {};
+  rows.forEach(r => {
+    const key = r.item || '기타';
+    if (!(key in idxByItem)) {
+      idxByItem[key] = groups.length;
+      groups.push({ item: key, rows: [] });
+    }
+    groups[idxByItem[key]].rows.push(r);
+  });
+  return groups;
+}
+
+function buildExportCardHTML() {
+  const contactCols = companyInfo.contacts.map(c => `
+    <div style="min-width:110px">
+      <div style="font-size:11px;color:#bcd4c6;margin-bottom:2px">${c.role || ''}</div>
+      <div style="font-size:12px;color:#fff;font-weight:600">${c.name || ''} · ${c.phone || ''}</div>
+    </div>
+  `).join('');
+
+  const sections = ['pork', 'majang'].map(sec => {
+    const groups = groupByItem(data[sec] || []);
+    if (!groups.length) return '';
+    const groupsHtml = groups.map(g => `
+      <div style="margin-bottom:14px">
+        <div style="font-size:13px;font-weight:700;color:#184b36;margin-bottom:6px">${g.item}</div>
+        <table style="width:100%;table-layout:fixed;border-collapse:collapse;font-size:12px;">
+          <colgroup>
+            <col style="width:22%"><col style="width:18%"><col style="width:12%"><col style="width:16%"><col style="width:32%">
+          </colgroup>
+          <thead>
+            <tr style="background:#eef3ee;">
+              <th style="text-align:left;padding:6px 8px;color:#184b36;font-weight:600;border-bottom:1px solid #cddccf;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">브랜드</th>
+              <th style="text-align:left;padding:6px 8px;color:#184b36;font-weight:600;border-bottom:1px solid #cddccf;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">원산지</th>
+              <th style="text-align:left;padding:6px 8px;color:#184b36;font-weight:600;border-bottom:1px solid #cddccf;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">포장</th>
+              <th style="text-align:left;padding:6px 8px;color:#184b36;font-weight:600;border-bottom:1px solid #cddccf;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">보관창고</th>
+              <th style="text-align:left;padding:6px 8px;color:#184b36;font-weight:600;border-bottom:1px solid #cddccf;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">비고</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${g.rows.map((r,i) => `
+              <tr style="background:${i%2? '#fbfbf9':'#ffffff'}">
+                <td style="padding:6px 8px;color:#111817;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${r.brand||'-'}</td>
+                <td style="padding:6px 8px;color:#111817;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${r.origin||'-'}</td>
+                <td style="padding:6px 8px;color:#111817;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${r.pack||'-'}</td>
+                <td style="padding:6px 8px;color:#66746f;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${r.storage||'-'}</td>
+                <td style="padding:6px 8px;color:${(r.note||'').includes('입항')?'#b45309':'#66746f'};overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${r.note||'-'}</td>
+              </tr>
+            `).join('')}
+          </tbody>
+        </table>
+      </div>
+    `).join('');
+    return `
+      <div style="padding:16px 20px 4px">
+        <div style="font-size:14px;font-weight:700;color:#184b36;margin-bottom:12px;padding-bottom:6px;border-bottom:2px solid #184b36">${CATEGORY_LABELS[sec]}</div>
+        ${groupsHtml}
+      </div>
+    `;
+  }).join('');
+
+  const today = new Date();
+  const dateStr = `${today.getFullYear()}.${today.getMonth()+1}.${today.getDate()}`;
+
+  return `
+    <div style="font-family:'Pretendard',-apple-system,sans-serif;background:#ffffff;border-radius:14px;overflow:hidden;border:1px solid #dbe7df;">
+      <div style="background:#184b36;padding:22px 24px;">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
+          <div>
+            <div style="color:#ffffff;font-size:19px;font-weight:700;">(주) 정솔푸드</div>
+            <div style="color:#bcd4c6;font-size:12px;margin-top:3px;">${companyInfo.address} · Tel ${companyInfo.tel} · Fax ${companyInfo.fax}</div>
+          </div>
+          <div style="color:#e8c979;font-size:11px;border:1px solid #e8c979;border-radius:20px;padding:4px 12px;white-space:nowrap">${dateStr} 기준</div>
+        </div>
+        <div style="display:flex;gap:18px;flex-wrap:wrap;padding-top:12px;border-top:1px solid rgba(255,255,255,.15)">
+          ${contactCols}
+        </div>
+      </div>
+      ${sections}
+      <div style="background:#f4f6f4;padding:12px 24px;font-size:11px;color:#66746f;text-align:center">
+        정직하게 솔직하게 · 정솔푸드 취급 품목표
+      </div>
+    </div>
+  `;
+}
+
+function exportImage() {
+  const overlay = document.getElementById('exportOverlay');
+  const statusEl = document.getElementById('export-status');
+  const imgEl = document.getElementById('export-preview-img');
+  const dlLink = document.getElementById('export-download-link');
+  imgEl.style.display = 'none';
+  dlLink.style.display = 'none';
+  statusEl.textContent = '이미지를 생성하는 중입니다...';
+  overlay.classList.add('show');
+
+  const card = document.getElementById('exportCard');
+  card.innerHTML = buildExportCardHTML();
+
+  if (typeof html2canvas === 'undefined') {
+    statusEl.textContent = '이미지 생성 라이브러리를 불러오지 못했습니다. 네트워크 상태를 확인해주세요.';
+    return;
+  }
+
+  html2canvas(card, { useCORS: true, backgroundColor: '#ffffff', scale: 2 }).then(canvas => {
+    const dataUrl = canvas.toDataURL('image/png');
+    imgEl.src = dataUrl;
+    imgEl.style.display = 'block';
+
+    const today = new Date();
+    const filename = `정솔푸드_품목표_${today.getFullYear()}${String(today.getMonth()+1).padStart(2,'0')}${String(today.getDate()).padStart(2,'0')}.png`;
+    dlLink.href = dataUrl;
+    dlLink.download = filename;
+    dlLink.style.display = 'inline-flex';
+
+    canvas.toBlob(blob => {
+      if (navigator.clipboard && window.ClipboardItem && blob) {
+        navigator.clipboard.write([new ClipboardItem({ 'image/png': blob })])
+          .then(() => { statusEl.textContent = '클립보드에 복사되었습니다! 다음카페 등 게시글 작성창에서 Ctrl+V(붙여넣기) 하시면 됩니다.'; })
+          .catch(() => { statusEl.textContent = '클립보드 복사는 지원되지 않아요. 아래 "이미지 다운로드" 버튼으로 저장 후 게시글에 첨부해주세요.'; });
+      } else {
+        statusEl.textContent = '아래 "이미지 다운로드" 버튼으로 저장 후 게시글에 첨부해주세요.';
+      }
+    });
+  }).catch(err => {
+    console.error(err);
+    statusEl.textContent = '이미지 생성 중 오류가 발생했습니다. 다시 시도해주세요.';
+  });
+}
+
 // 날짜
 const d = new Date();
 document.getElementById('updateDate').textContent =
@@ -503,7 +817,7 @@ document.getElementById('updateDate').textContent =
 loadData();
 
 // 영문에서 접근했을 때 WhatsApp 플로팅 버튼 표시
-const fromEn = document.referrer.includes('en.html') || 
+const fromEn = document.referrer.includes('en.html') ||
                navigator.language.startsWith('en') ||
                location.search.includes('lang=en');
 if(fromEn){
