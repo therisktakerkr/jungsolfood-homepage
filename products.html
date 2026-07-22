@@ -25,6 +25,7 @@
     .header-inner{max-width:1200px;margin:0 auto;height:72px;display:flex;align-items:center;justify-content:space-between;gap:16px;position:relative}
     .desk-nav{display:flex;align-items:center;gap:24px;font-size:15px;font-weight:500;color:#24322f;position:absolute;left:50%;transform:translateX(-50%)}
     .desk-nav a{transition:.2s;white-space:nowrap}.desk-nav a:hover,.desk-nav a.active{color:var(--green);font-weight:700}
+    .nav-ext{display:inline-flex;align-items:center;gap:4px}.nav-ext .ext-ico{font-size:11px;line-height:1;opacity:.55;transform:translateY(-1px);transition:.2s ease}.nav-ext:hover .ext-ico{opacity:1;transform:translate(2px,-3px)}.mobile-nav .nav-ext .ext-ico{font-size:15px;opacity:.5}
     .hamburger{display:none;flex-direction:column;justify-content:center;gap:5px;width:40px;height:40px;background:none;border:none;cursor:pointer;padding:6px;border-radius:8px}.hamburger span{display:block;width:22px;height:2px;background:var(--green);border-radius:2px;transition:.3s;transform-origin:center}.hamburger.open span:nth-child(1){transform:translateY(7px) rotate(45deg)}.hamburger.open span:nth-child(2){opacity:0}.hamburger.open span:nth-child(3){transform:translateY(-7px) rotate(-45deg)}
     .mobile-nav{display:none;position:fixed;inset:0;top:72px;z-index:49;background:rgba(251,250,246,.97);backdrop-filter:blur(20px);flex-direction:column;padding:24px;gap:0;border-top:1px solid var(--line)}.mobile-nav.open{display:flex}.mobile-nav a{font-size:18px;font-weight:600;color:var(--ink);padding:16px 0;border-bottom:1px solid var(--line);transition:.2s}.mobile-nav a:hover,.mobile-nav a.active{color:var(--green)}
     @media(max-width:900px){.desk-nav{display:none}.hamburger{display:flex}.btn{height:36px;padding:0 12px;font-size:12px}.header-inner .brand img{width:132px}}
@@ -143,6 +144,7 @@
       <a href="index.html#business">사업 영역</a>
       <a href="products.html" class="active">품목표</a>
       <a href="index.html#values">비전</a>
+      <a class="nav-ext" href="https://blog.naver.com/jungsolfood" target="_blank" rel="noopener noreferrer" aria-label="정솔푸드 블로그 (새 창)">블로그<span class="ext-ico" aria-hidden="true">↗</span></a>
       <a href="index.html#contact">문의</a>
     </nav>
     <div class="header-actions">
@@ -160,6 +162,7 @@
   <a href="index.html#business" onclick="closeMenu()">사업 영역</a>
   <a href="products.html" class="active">품목표</a>
   <a href="index.html#values" onclick="closeMenu()">비전</a>
+  <a class="nav-ext" href="https://blog.naver.com/jungsolfood" target="_blank" rel="noopener noreferrer" aria-label="정솔푸드 블로그 (새 창)">블로그<span class="ext-ico" aria-hidden="true">↗</span></a>
   <a href="index.html#contact" onclick="closeMenu()">문의</a>
 </nav>
 <div class="edit-overlay" id="pwOverlay" onclick="closePwModal(event)" style="display:none">
